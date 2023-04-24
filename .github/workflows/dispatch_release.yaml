@@ -1,0 +1,36 @@
+name: "[Dispatch] Release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '`vx.y.z` 형태로 버전을 입력해주세요.'
+        required: true
+        default: v1.0.0
+
+env:
+  TAG: ${{ github.event.inputs.tag }}
+  SLACK_WEBHOOK_URL: ${{secrets.SLACK_WEBHOOK_URL}}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        run: echo "docker"
+
+  scan:
+    needs: docker
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Run Trivy vulnerability scanner
+        id: trivy-scan
+        run: echo "scan"
+
+  notification:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack
+        if: always()
+        run: echo "noti"
